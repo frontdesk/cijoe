@@ -100,7 +100,7 @@ class CIJoe
         end
         puts "Using HTTP basic auth"
       end
-      set :project_path, Proc.new{project_path}
+      set :project_path, Proc.new{project_path}, true
     end
 
     def check_project
