@@ -2,9 +2,20 @@ require 'yaml'
 
 class CIJoe
   class Build < Struct.new(:project_path, :user, :project, :started_at, :finished_at, :sha, :status, :output, :pid, :branch)
+
     def initialize(*args)
       super
       self.started_at ||= Time.now
+    end
+
+    def self.new_from_hash(hash)
+      (hash.keys - Build.members).tap do |extra_arguments|
+        if extra_arguments.any?
+          raise ArgumentError.new("invalid argument #{extra_arguments.join(' ')}")
+        end
+      end
+
+      new( *hash.values_at(*Build.members.map {|member| member.to_sym}))
     end
 
     def status

@@ -88,7 +88,12 @@ class CIJoe
       # leave anyway because a current build runs
       return
     end
-    @current_build = Build.new(@project_path, @user, @project)
+    @current_build = Build.new_from_hash({
+      project_path: @project_path,
+      user:         @user,
+      project:      @project,
+    })
+
     write_build 'current', @current_build
     Thread.new { build!(branch) }
   end
