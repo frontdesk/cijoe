@@ -180,7 +180,7 @@ class CIJoe
       ENV.clear
       data.each{ |k, v| ENV[k] = v }
       output = `cd #{@project_path} && sh #{file}`
-      
+
       ENV.clear
       orig_ENV.to_hash.each{ |k, v| ENV[k] = v}
       output
