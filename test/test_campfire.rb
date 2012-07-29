@@ -2,26 +2,7 @@ require "helper"
 require "cijoe"
 require "fakefs/safe"
 
-
 class TestCampfire < Test::Unit::TestCase
-
-  class ::CIJoe
-    attr_writer :current_build, :last_build
-    # make Build#restore a no-op so we don't overwrite our current/last
-    # build attributes set from tests.
-    def restore
-    end
-
-    # make CIJoe#build! and CIJoe#git_update a no-op so we don't overwrite our local changes
-    # or local commits nor should we run tests.
-    def build!
-    end
-
-  end
-
-  def app
-    CIJoe::Server.new
-  end
 
   def teardown
     teardown_git_info
