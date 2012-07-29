@@ -9,7 +9,7 @@ class CIJoe
     dir = File.dirname(File.expand_path(__FILE__))
 
     set :views,  "#{dir}/views"
-    set :public, "#{dir}/public"
+    set :public_folder, "#{dir}/public"
     set :static, true
     set :lock, true
 
@@ -100,7 +100,7 @@ class CIJoe
         end
         puts "Using HTTP basic auth"
       end
-      set :project_path, Proc.new{project_path}
+      set :project_path, Proc.new{project_path}, true
     end
 
     def check_project
