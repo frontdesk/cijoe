@@ -79,7 +79,7 @@ class CIJoe
     def initialize(*args)
       super
       check_project
-      @joe = CIJoe.new(options.project_path)
+      @joe = CIJoe.new(settings.project_path)
     end
 
     def self.start(host, port, project_path)
@@ -104,7 +104,7 @@ class CIJoe
     end
 
     def check_project
-      if options.project_path.nil? || !File.exists?(File.expand_path(options.project_path))
+      if settings.project_path.nil? || !File.exists?(File.expand_path(settings.project_path))
         puts "Whoops! I need the path to a Git repo."
         puts "  $ git clone git@github.com:username/project.git project"
         abort "  $ cijoe project"

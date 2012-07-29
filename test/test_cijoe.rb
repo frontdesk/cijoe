@@ -6,12 +6,18 @@ class TestCIJoe < Test::Unit::TestCase
       CIJoe::Config.new('--invalid').to_s
     end
   end
-  
+
   def test_return_value_of_config
-    assert_equal `git config blame`.chomp, CIJoe::Config.new('blame').to_s
+    assert_equal `git config core.editor`.chomp, CIJoe::Config.new('core.editor').to_s
   end
-  
-  def test_return_empty_string_when_config_does_not_exist
+
+  def test_return_empty_string_when_config_key_does_not_exist
+    assert_equal '', CIJoe::Config.new('cijoe.invalid').to_s
+  end
+
+  def test_return_empty_string_when_config_section_does_not_exist
     assert_equal '', CIJoe::Config.new('invalid').to_s
   end
+
+
 end
