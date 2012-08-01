@@ -4,3 +4,4 @@ pkg
 *.tmproj
 tmp/**/*
 tmp/*
+test/fixtures/testrepo.git

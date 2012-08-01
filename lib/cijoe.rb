@@ -20,14 +20,17 @@ require 'cijoe/build'
 require 'cijoe/campfire'
 require 'cijoe/server'
 require 'cijoe/queue'
+require 'cijoe/git'
 
 class CIJoe
-  attr_reader :user, :project, :url, :current_build, :last_build, :campfire
+  attr_reader :user, :project, :url, :current_build, :last_build, :campfire, :git
 
   def initialize(project_path)
     @project_path = File.expand_path(project_path)
 
-    @user, @project = git_user_and_project
+    @git = Git.new(@project_path)
+
+    @user, @project = @git.user_and_project
     @url = "http://github.com/#{@user}/#{@project}"
 
     @campfire = CIJoe::Campfire.new(project_path)
@@ -114,12 +117,14 @@ class CIJoe
 
   # update git then run the build
   def build!(branch=nil)
-    @git_branch = branch
     build = @current_build
     output = ''
-    git_update
-    build.sha = git_sha
-    build.branch = git_branch
+
+    @git.update
+
+    build.branch = branch || @git.branch
+    build.sha = @git.branch_sha build.branch
+
     write_build 'current', build
 
     open_pipe("cd #{@project_path} && #{runner_command} 2>&1") do |pipe, pid|
@@ -145,25 +150,6 @@ class CIJoe
   def runner_command
     runner = repo_config.runner.to_s
     runner == '' ? "rake -s test:units" : runner
-  end
-
-  def git_sha
-    `cd #{@project_path} && git rev-parse origin/#{git_branch}`.chomp
-  end
-
-  def git_update
-    `cd #{@project_path} && git fetch origin && git reset --hard origin/#{git_branch}`
-    run_hook "after-reset"
-  end
-
-  def git_user_and_project
-    Config.remote(@project_path).origin.url.to_s.chomp('.git').split(':')[-1].split('/')[-2, 2]
-  end
-
-  def git_branch
-    return @git_branch if @git_branch
-    branch = repo_config.branch.to_s
-    @git_branch = branch == '' ? "master" : branch
   end
 
   # massage our repo

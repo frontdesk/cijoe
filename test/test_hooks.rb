@@ -21,16 +21,20 @@ end
 class CIJoe
   attr_writer :last_build
   alias orig_path_in_project path_in_project
-  alias orig_git_user_and_project git_user_and_project
   
   def path_in_project(f)
     return '/tmp/test' if $hook_override
     orig_path_in_project
   end
   
-  def git_user_and_project
+end
+
+class CIJoe::Git
+  alias orig_user_and_project user_and_project
+
+  def user_and_project
     return ['mine','yours'] if $hook_override
-    orig_git_user_and_project
+    orig_user_and_project
   end
 end
 
