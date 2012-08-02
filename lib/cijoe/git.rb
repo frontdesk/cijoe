@@ -4,7 +4,7 @@ class CIJoe
       @project_path = project_path
     end
 
-    def branch_sha branch
+    def branch_sha(branch)
       `cd #{@project_path} && git rev-parse origin/#{branch}`.chomp
     end
 
