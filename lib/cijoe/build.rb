@@ -62,10 +62,13 @@ class CIJoe
       @commit ||= Commit.new(sha, user, project, project_path)
     end
 
-    def dump(file)
+    def dump
       config = [user, project, started_at, finished_at, sha, status, output, pid, branch]
-      data = YAML.dump(config)
-      File.open(file, 'wb') { |io| io.write(data) }
+      YAML.dump(config)
+    end
+
+    def dump_to_file(file)
+      File.open(file, 'wb') { |io| io.write(dump) }
     end
 
     def self.load(file, project_path)

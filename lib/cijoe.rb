@@ -199,7 +199,7 @@ class CIJoe
     filename = path_in_project(".git/builds/#{name}")
     Dir.mkdir path_in_project('.git/builds') unless File.directory?(path_in_project('.git/builds'))
     if build
-      build.dump filename
+      build.dump_to_file filename
     elsif File.exist?(filename)
       File.unlink filename
     end
