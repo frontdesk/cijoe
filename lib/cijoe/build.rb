@@ -2,9 +2,20 @@ require 'yaml'
 
 class CIJoe
   class Build < Struct.new(:project_path, :user, :project, :started_at, :finished_at, :sha, :status, :output, :pid, :branch)
+
     def initialize(*args)
       super
       self.started_at ||= Time.now
+    end
+
+    def self.new_from_hash(hash)
+      (hash.keys - Build.members).tap do |extra_arguments|
+        if extra_arguments.any?
+          raise ArgumentError.new("invalid argument #{extra_arguments.join(' ')}")
+        end
+      end
+
+      new( *hash.values_at(*Build.members.map {|member| member.to_sym}))
     end
 
     def status
@@ -51,17 +62,14 @@ class CIJoe
       @commit ||= Commit.new(sha, user, project, project_path)
     end
 
-    def dump(file)
+    def dump
       config = [user, project, started_at, finished_at, sha, status, output, pid, branch]
-      data = YAML.dump(config)
-      File.open(file, 'wb') { |io| io.write(data) }
+      YAML.dump(config)
     end
 
-    def self.load(file, project_path)
-      if File.exist?(file)
-        config = YAML.load(File.read(file)).unshift(project_path)
-        new *config
-      end
+    def self.parse(data, project_path)
+      config = YAML.load(data).unshift(project_path)
+      new *config
     end
   end
 end

@@ -28,6 +28,7 @@ class CIJoe
     end
 
     post '/?' do
+
       unless params[:rebuild]
         payload = JSON.parse(params[:payload])
         pushed_branch = payload["ref"].split('/').last
@@ -36,7 +37,7 @@ class CIJoe
       # Only build if we were given an explicit branch via `?branch=blah`
       # or the payload exists and the "ref" property matches our 
       # specified build branch.
-      if params[:branch] || params[:rebuild] || pushed_branch == joe.git_branch
+      if params[:branch] || params[:rebuild] || pushed_branch == joe.git.branch
         joe.build(params[:branch])
       end
 
@@ -104,7 +105,9 @@ class CIJoe
     end
 
     def check_project
-      if settings.project_path.nil? || !File.exists?(File.expand_path(settings.project_path))
+      if settings.project_path.nil? ||
+        !File.exists?(File.expand_path(settings.project_path)) ||
+        !File.exists?(File.join(File.expand_path(settings.project_path),'.git'))
         puts "Whoops! I need the path to a Git repo."
         puts "  $ git clone git@github.com:username/project.git project"
         abort "  $ cijoe project"

@@ -17,6 +17,16 @@ def tmp_dir
   TMP_DIR
 end
 
+TEST_DIR = File.dirname(File.expand_path(__FILE__))
+
+def temp_repo(repo)
+  dir = Dir.mktmpdir 'dir'
+  repo_dir = File.join(TEST_DIR, (File.join('fixtures', repo, '.')))
+  `git clone #{repo_dir} #{dir}`
+  dir
+end
+
+
 def setup_git_info(options = {})
   @tmp_dirs ||= []
   @tmp_dirs += [options[:tmp_dir]]

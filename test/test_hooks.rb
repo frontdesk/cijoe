@@ -21,16 +21,20 @@ end
 class CIJoe
   attr_writer :last_build
   alias orig_path_in_project path_in_project
-  alias orig_git_user_and_project git_user_and_project
   
   def path_in_project(f)
     return '/tmp/test' if $hook_override
     orig_path_in_project
   end
   
-  def git_user_and_project
+end
+
+class CIJoe::Git
+  alias orig_user_and_project user_and_project
+
+  def user_and_project
     return ['mine','yours'] if $hook_override
-    orig_git_user_and_project
+    orig_user_and_project
   end
 end
 
@@ -55,8 +59,19 @@ class TestHooks < Test::Unit::TestCase
     File.chmod(0777,'/tmp/test')
     
     @cijoe = CIJoe.new('/tmp')
-    @cijoe.last_build = CIJoe::Build.new "path", "user", "project", Time.now, Time.now,
-      "deadbeef", :failed, "output", nil
+
+    @cijoe.last_build =CIJoe::Build.new_from_hash(
+      {project_path: 'path',
+       user:         'user',
+       project:      'project',
+       started_at:   Time.now,
+       finished_at:  Time.now,
+       sha:          'deadbeef',
+       status:       :failed,
+       output:       'output',
+       pid:          nil
+    })
+
     @cijoe.last_build.commit.raw_commit = "Author: commit author\nDate: now"
   end
   

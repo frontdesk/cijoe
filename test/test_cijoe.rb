@@ -1,23 +1,36 @@
 require 'helper'
 
 class TestCIJoe < Test::Unit::TestCase
-  def test_raise_error_on_invalid_command
-    assert_raise RuntimeError, LoadError do
-      CIJoe::Config.new('--invalid').to_s
+  def setup
+    @cijoe = CIJoe.new(temp_repo('testrepo.git'))
+
+    @build = CIJoe::Build.new(
+      {project_path: 'path',
+       user:         'user',
+       project:      'project',
+       started_at:   Time.now,
+       sha:          'HEAD',
+       status:       :success,
+       output:       'output',
+       pid:          nil
+    })
+
+  end
+
+  def test_write_build
+    assert_nothing_raised do
+      @cijoe.write_build('current', @build)
     end
   end
 
-  def test_return_value_of_config
-    assert_equal `git config core.editor`.chomp, CIJoe::Config.new('core.editor').to_s
+  def test_non_existing_read_build
+    assert_equal nil, @cijoe.read_build('current')
   end
 
-  def test_return_empty_string_when_config_key_does_not_exist
-    assert_equal '', CIJoe::Config.new('cijoe.invalid').to_s
+  def test_read_build
+    @cijoe.write_build('current', @build)
+    assert_nothing_raised do
+      @cijoe.read_build('current')
+    end
   end
-
-  def test_return_empty_string_when_config_section_does_not_exist
-    assert_equal '', CIJoe::Config.new('invalid').to_s
-  end
-
-
 end

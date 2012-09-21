@@ -20,14 +20,17 @@ require 'cijoe/build'
 require 'cijoe/campfire'
 require 'cijoe/server'
 require 'cijoe/queue'
+require 'cijoe/git'
 
 class CIJoe
-  attr_reader :user, :project, :url, :current_build, :last_build, :campfire
+  attr_reader :user, :project, :url, :current_build, :last_build, :campfire, :git
 
   def initialize(project_path)
     @project_path = File.expand_path(project_path)
 
-    @user, @project = git_user_and_project
+    @git = Git.new(@project_path)
+
+    @user, @project = @git.user_and_project
     @url = "http://github.com/#{@user}/#{@project}"
 
     @campfire = CIJoe::Campfire.new(project_path)
@@ -70,11 +73,10 @@ class CIJoe
     @current_build.finished_at = Time.now
     @current_build.status = status
     @current_build.output = output
+    write_build 'last', @current_build
     @last_build = @current_build
 
     @current_build = nil
-    write_build 'current', @current_build
-    write_build 'last', @last_build
     @campfire.notify(@last_build) if @campfire.valid?
 
     build(@queue.next_branch_to_build) if @queue.waiting?
@@ -88,8 +90,12 @@ class CIJoe
       # leave anyway because a current build runs
       return
     end
-    @current_build = Build.new(@project_path, @user, @project)
-    write_build 'current', @current_build
+    @current_build = Build.new_from_hash({
+      project_path: @project_path,
+      user:         @user,
+      project:      @project,
+    })
+
     Thread.new { build!(branch) }
   end
 
@@ -109,19 +115,19 @@ class CIJoe
 
   # update git then run the build
   def build!(branch=nil)
-    @git_branch = branch
     build = @current_build
     output = ''
-    git_update
-    build.sha = git_sha
-    build.branch = git_branch
-    write_build 'current', build
+
+    @git.update
+    run_hook "after-reset"
+
+    build.branch = branch || @git.branch
+    build.sha = @git.branch_sha build.branch
 
     open_pipe("cd #{@project_path} && #{runner_command} 2>&1") do |pipe, pid|
       puts "#{Time.now.to_i}: Building #{build.branch} at #{build.short_sha}: pid=#{pid}"
 
       build.pid = pid
-      write_build 'current', build
       output = pipe.read
     end
 
@@ -140,25 +146,6 @@ class CIJoe
   def runner_command
     runner = repo_config.runner.to_s
     runner == '' ? "rake -s test:units" : runner
-  end
-
-  def git_sha
-    `cd #{@project_path} && git rev-parse origin/#{git_branch}`.chomp
-  end
-
-  def git_update
-    `cd #{@project_path} && git fetch origin && git reset --hard origin/#{git_branch}`
-    run_hook "after-reset"
-  end
-
-  def git_user_and_project
-    Config.remote(@project_path).origin.url.to_s.chomp('.git').split(':')[-1].split('/')[-2, 2]
-  end
-
-  def git_branch
-    return @git_branch if @git_branch
-    branch = repo_config.branch.to_s
-    @git_branch = branch == '' ? "master" : branch
   end
 
   # massage our repo
@@ -190,7 +177,6 @@ class CIJoe
   # restore current / last build state from disk.
   def restore
     @last_build = read_build('last')
-    @current_build = read_build('current')
 
     Process.kill(0, @current_build.pid) if @current_build && @current_build.pid
   rescue Errno::ESRCH
@@ -205,13 +191,8 @@ class CIJoe
 
   # write build info for build to file.
   def write_build(name, build)
-    filename = path_in_project(".git/builds/#{name}")
-    Dir.mkdir path_in_project('.git/builds') unless File.directory?(path_in_project('.git/builds'))
-    if build
-      build.dump filename
-    elsif File.exist?(filename)
-      File.unlink filename
-    end
+    @git.tag(build.sha, name)
+    @git.note(name, build.dump)
   end
 
   def repo_config
@@ -220,6 +201,7 @@ class CIJoe
 
   # load build info from file.
   def read_build(name)
-    Build.load(path_in_project(".git/builds/#{name}"), @project_path)
+    sha = @git.tag_sha(name)
+    Build.parse(@git.note_message(name), @project_path) unless sha.nil?
   end
 end

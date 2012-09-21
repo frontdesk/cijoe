@@ -122,7 +122,16 @@ class TestCIJoeServer < Test::Unit::TestCase
   # Create a new, fake build. All we care about is status.
 
   def build status
-    CIJoe::Build.new "path", "user", "project", Time.now, Time.now,
-      "deadbeef", status, "output", nil
+    CIJoe::Build.new_from_hash(
+      {project_path: 'path',
+       user:         'user',
+       project:      'project',
+       started_at:   Time.now,
+       finished_at:  Time.now,
+       sha:          'deadbeef',
+       status:       status,
+       output:       'output',
+       pid:          nil
+    })
   end
 end
