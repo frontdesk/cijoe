@@ -19,7 +19,7 @@ class CIJoe
     end
 
     def to_s
-      git_command = "cd #{@project_path} && git config #{config_string}"
+      git_command = "cd #{@project_path} 2>/dev/null && git config #{config_string}"
       result = `#{git_command} 2>/dev/null`.chomp
       process_status = $?
 
