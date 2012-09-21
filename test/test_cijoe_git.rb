@@ -54,7 +54,7 @@ class TestCIJoeGit < Test::Unit::TestCase
   end
 
   def test_note_add
-    text = 'note test'
+    text = 'note\' test'
     sha = 'HEAD'
     @git.note(sha, text)
     note_text = `cd #{@git.project_path} && git notes --ref=build show HEAD`

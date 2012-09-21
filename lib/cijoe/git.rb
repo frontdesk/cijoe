@@ -30,9 +30,21 @@ class CIJoe
     end
     alias :tag_sha :rev_parse
 
+    # use a tmp file to add the note
+    # to go around bash quoting nightmare
+    # TODO: maybe use pipes to do this in memory
     def note(sha, text)
-      `cd #{@project_path} && git notes --ref=build add -f -m 2>/dev/null "#{text}" #{sha}`.chomp
-      $? == 0 ? true : false
+      begin
+        file = Tempfile.new('cijoe_note')
+        file.write(text)
+        file.close
+        `cd #{@project_path} && git notes --ref=build add -F #{file.path} -f 2>/dev/null #{sha}`
+        exit_status = $?
+      ensure
+        file.close!
+      end
+
+      exit_status == 0 ? true : false
     end
 
     def note_message(sha)
