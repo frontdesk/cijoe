@@ -2,6 +2,11 @@ class CIJoe
   class Git
     attr_reader :project_path
 
+    class InvalidGitRepo < StandardError
+      def to_s
+        'Invalid git repo path.'
+      end
+    end
 
     def initialize(project_path)
       @project_path = project_path
@@ -34,7 +39,12 @@ class CIJoe
     end
 
     def user_and_project
-      Config.remote(@project_path).origin.url.to_s.chomp('.git').split(':')[-1].split('/')[-2, 2]
+      url = git_remote_url
+      unless url.empty?
+        return url.chomp('.git').split(':')[-1].split('/')[-2, 2]
+      else
+        raise InvalidGitRepo
+      end
     end
 
     def branch
@@ -44,6 +54,11 @@ class CIJoe
       else
         branch
       end
+    end
+
+    private
+    def git_remote_url
+      Config.remote(@project_path).origin.url.to_s
     end
   end
 end

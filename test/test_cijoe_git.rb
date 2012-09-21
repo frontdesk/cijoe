@@ -5,6 +5,19 @@ class TestCIJoeGit < Test::Unit::TestCase
     @git = CIJoe::Git.new(temp_repo('testrepo.git'))
   end
 
+  def test_user_and_project
+    user, project = @git.user_and_project
+    assert_equal 'testrepo.git', user
+    assert_equal '.', project
+  end
+
+  def test_user_and_project_on_invalid_repo
+    @git = CIJoe::Git.new('invalid_repo_path')
+    assert_raise CIJoe::Git::InvalidGitRepo do
+      @git.user_and_project
+    end
+  end
+
   def test_branch_sha
     assert_equal 'b557b867cfc8b86aa5ad73729ffe0017922fbce1', @git.branch_sha('master')
   end
