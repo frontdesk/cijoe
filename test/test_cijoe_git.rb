@@ -48,6 +48,11 @@ class TestCIJoeGit < Test::Unit::TestCase
     assert_equal sha, @git.tag_sha(tag_name)
   end
 
+  def test_nonexisting_tag_sha
+    tag_name = 'current'
+    assert_equal nil, @git.tag_sha(tag_name)
+  end
+
   def test_note_add
     text = 'note test'
     sha = 'HEAD'

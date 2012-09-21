@@ -25,7 +25,8 @@ class CIJoe
     end
 
     def rev_parse(name)
-      `cd #{@project_path} && git rev-parse #{name}`.chomp
+      result = `cd #{@project_path} && git rev-parse #{name} 2>/dev/null`.chomp
+      $? == 0 ? result : nil
     end
     alias :tag_sha :rev_parse
 
