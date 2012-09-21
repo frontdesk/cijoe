@@ -105,7 +105,9 @@ class CIJoe
     end
 
     def check_project
-      if settings.project_path.nil? || !File.exists?(File.expand_path(settings.project_path))
+      if settings.project_path.nil? ||
+        !File.exists?(File.expand_path(settings.project_path)) ||
+        !File.exists?(File.join(File.expand_path(settings.project_path),'.git'))
         puts "Whoops! I need the path to a Git repo."
         puts "  $ git clone git@github.com:username/project.git project"
         abort "  $ cijoe project"
