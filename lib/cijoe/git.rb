@@ -23,6 +23,14 @@ class CIJoe
       `cd #{@project_path} && git rev-parse #{name}`.chomp
     end
 
+    def note(sha, text)
+      `cd #{@project_path} && git notes --ref=build add -m "#{text}" #{sha}`.chomp
+    end
+
+    def note_message(sha)
+      `cd #{@project_path} && git notes --ref=build show #{sha}`.chomp
+    end
+
     def user_and_project
       Config.remote(@project_path).origin.url.to_s.chomp('.git').split(':')[-1].split('/')[-2, 2]
     end

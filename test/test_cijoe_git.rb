@@ -27,4 +27,19 @@ class TestCIJoeGit < Test::Unit::TestCase
     @git.tag(sha, tag_name)
     assert_equal sha, @git.tag_sha(tag_name)
   end
+
+  def test_note_add
+    text = 'note test'
+    sha = 'HEAD'
+    @git.note(sha, text)
+    note_text = `cd #{@git.project_path} && git notes --ref=build show HEAD`
+    assert_equal text + "\n", note_text
+  end
+
+  def test_note_message
+    text = 'note test'
+    sha = 'HEAD'
+    @git.note(sha, text)
+    assert_equal text, @git.note_message(sha)
+  end
 end
