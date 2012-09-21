@@ -61,6 +61,13 @@ class TestCIJoeGit < Test::Unit::TestCase
     assert_equal text + "\n", note_text
   end
 
+  def test_note_multiple_add
+    text = 'note test'
+    sha = 'HEAD'
+    @git.note(sha, text)
+    assert_equal true, @git.note(sha, text)
+  end
+
   def test_note_message
     text = 'note test'
     sha = 'HEAD'

@@ -31,7 +31,8 @@ class CIJoe
     alias :tag_sha :rev_parse
 
     def note(sha, text)
-      `cd #{@project_path} && git notes --ref=build add -m "#{text}" #{sha}`.chomp
+      `cd #{@project_path} && git notes --ref=build add -f -m 2>/dev/null "#{text}" #{sha}`.chomp
+      $? == 0 ? true : false
     end
 
     def note_message(sha)
