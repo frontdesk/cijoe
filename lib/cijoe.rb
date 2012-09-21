@@ -76,7 +76,6 @@ class CIJoe
     @last_build = @current_build
 
     @current_build = nil
-    write_build 'current', @current_build
     write_build 'last', @last_build
     @campfire.notify(@last_build) if @campfire.valid?
 
@@ -97,7 +96,6 @@ class CIJoe
       project:      @project,
     })
 
-    write_build 'current', @current_build
     Thread.new { build!(branch) }
   end
 
@@ -126,13 +124,10 @@ class CIJoe
     build.branch = branch || @git.branch
     build.sha = @git.branch_sha build.branch
 
-    write_build 'current', build
-
     open_pipe("cd #{@project_path} && #{runner_command} 2>&1") do |pipe, pid|
       puts "#{Time.now.to_i}: Building #{build.branch} at #{build.short_sha}: pid=#{pid}"
 
       build.pid = pid
-      write_build 'current', build
       output = pipe.read
     end
 
@@ -197,13 +192,8 @@ class CIJoe
 
   # write build info for build to file.
   def write_build(name, build)
-    filename = path_in_project(".git/builds/#{name}")
-    Dir.mkdir path_in_project('.git/builds') unless File.directory?(path_in_project('.git/builds'))
-    if build
-      build.dump_to_file filename
-    elsif File.exist?(filename)
-      File.unlink filename
-    end
+    @git.tag(build.sha, name)
+    @git.note(name, build.dump)
   end
 
   def repo_config
@@ -212,6 +202,7 @@ class CIJoe
 
   # load build info from file.
   def read_build(name)
-    Build.load(path_in_project(".git/builds/#{name}"), @project_path)
+    sha = @git.tag_sha(name)
+    Build.parse(@git.note_message(name), @project_path) unless sha.nil?
   end
 end

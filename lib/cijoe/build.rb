@@ -67,15 +67,9 @@ class CIJoe
       YAML.dump(config)
     end
 
-    def dump_to_file(file)
-      File.open(file, 'wb') { |io| io.write(dump) }
-    end
-
-    def self.load(file, project_path)
-      if File.exist?(file)
-        config = YAML.load(File.read(file)).unshift(project_path)
-        new *config
-      end
+    def self.parse(data, project_path)
+      config = YAML.load(data).unshift(project_path)
+      new *config
     end
   end
 end
