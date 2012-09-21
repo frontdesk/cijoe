@@ -121,6 +121,7 @@ class CIJoe
     output = ''
 
     @git.update
+    run_hook "after-reset"
 
     build.branch = branch || @git.branch
     build.sha = @git.branch_sha build.branch

@@ -62,4 +62,10 @@ class TestCIJoeGit < Test::Unit::TestCase
     @git.note(sha, text)
     assert_equal text, @git.note_message(sha)
   end
+
+  def test_update
+    assert_nothing_raised do
+      @git.update
+    end
+  end
 end

@@ -17,8 +17,7 @@ class CIJoe
     end
 
     def update
-      `cd #{@project_path} && git fetch origin && git reset --hard origin/#{git_branch}`
-      run_hook "after-reset"
+      `cd #{@project_path} && git fetch origin && git reset --hard origin/#{branch}`
     end
 
     def tag(sha, name)
