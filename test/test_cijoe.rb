@@ -1,6 +1,6 @@
 require 'helper'
 
-class TestCIJoe < Test::Unit::TestCase
+class TestCIJoe < MiniTest::Unit::TestCase
   def setup
     @cijoe = CIJoe.new(temp_repo('testrepo.git'))
 
@@ -19,19 +19,15 @@ class TestCIJoe < Test::Unit::TestCase
   end
 
   def test_write_build
-    assert_nothing_raised do
-      @cijoe.write_build('current', @build)
-    end
+    assert @cijoe.write_build('current', @build).inspect
   end
 
   def test_non_existing_read_build
-    assert_equal nil, @cijoe.read_build('current')
+    assert_nil @cijoe.read_build('current')
   end
 
   def test_read_build
     @cijoe.write_build('current', @build)
-    assert_nothing_raised do
-      @cijoe.read_build('current')
-    end
+    assert @cijoe.read_build('current')
   end
 end

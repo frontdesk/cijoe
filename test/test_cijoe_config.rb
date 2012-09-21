@@ -1,8 +1,8 @@
 require 'helper'
 
-class TestCIJoe < Test::Unit::TestCase
+class TestCIJoe < MiniTest::Unit::TestCase
   def test_raise_error_on_invalid_command
-    assert_raise RuntimeError, LoadError do
+    assert_raises RuntimeError, LoadError do
       CIJoe::Config.new('--invalid').to_s
     end
   end

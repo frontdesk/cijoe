@@ -2,7 +2,7 @@ require "helper"
 require "cijoe"
 require "fakefs/safe"
 
-class TestCampfire < Test::Unit::TestCase
+class TestCampfire < MiniTest::Unit::TestCase
 
   def teardown
     teardown_git_info

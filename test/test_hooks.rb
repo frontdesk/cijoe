@@ -44,7 +44,7 @@ end
 
 
 
-class TestHooks < Test::Unit::TestCase
+class TestHooks < MiniTest::Unit::TestCase
   def teardown
     $hook_override = nil
   end

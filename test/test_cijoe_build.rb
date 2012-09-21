@@ -1,6 +1,6 @@
 require 'helper'
 
-class TestCIJoeBuild < Test::Unit::TestCase
+class TestCIJoeBuild < MiniTest::Unit::TestCase
 
   def setup
     @time_now =  Time.utc(2007,11,1,15,25)
@@ -23,7 +23,7 @@ class TestCIJoeBuild < Test::Unit::TestCase
   end
 
   def test_new_from_hash_fails_on_extra_args
-    assert_raise RuntimeError, ArgumentError do
+    assert_raises RuntimeError, ArgumentError do
       build = CIJoe::Build.new_from_hash :illegal => 'deadbeef'
     end
   end

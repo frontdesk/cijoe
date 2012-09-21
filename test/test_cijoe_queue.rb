@@ -1,6 +1,6 @@
 require 'helper'
 
-class TestCIJoeQueue < Test::Unit::TestCase
+class TestCIJoeQueue < MiniTest::Unit::TestCase
   def test_a_disabled_queue
     subject = CIJoe::Queue.new(false)
     subject.append_unless_already_exists("test")

@@ -2,7 +2,7 @@ require "helper"
 require "rack/test"
 require "cijoe/server"
 
-class TestCIJoeServer < Test::Unit::TestCase
+class TestCIJoeServer < MiniTest::Unit::TestCase
   include Rack::Test::Methods
 
   class ::CIJoe
