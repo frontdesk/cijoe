@@ -2,6 +2,7 @@ class CIJoe
   class Git
     attr_reader :project_path
 
+
     def initialize(project_path)
       @project_path = project_path
     end
@@ -16,12 +17,13 @@ class CIJoe
     end
 
     def tag(sha, name)
-      `cd #{@project_path} && git tag #{name} #{sha}`
+      `cd #{@project_path} && git tag -f #{name} #{sha}`
     end
 
-    def tag_sha(name)
+    def rev_parse(name)
       `cd #{@project_path} && git rev-parse #{name}`.chomp
     end
+    alias :tag_sha :rev_parse
 
     def note(sha, text)
       `cd #{@project_path} && git notes --ref=build add -m "#{text}" #{sha}`.chomp

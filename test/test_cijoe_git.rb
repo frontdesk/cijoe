@@ -21,6 +21,13 @@ class TestCIJoeGit < Test::Unit::TestCase
     assert_equal sha, tag_sha
   end
 
+  def test_tag_overwrite
+    tag_name = 'current'
+    @git.tag('HEAD~1', tag_name)
+    @git.tag('HEAD', tag_name)
+    assert_equal @git.rev_parse('HEAD'), @git.tag_sha(tag_name)
+  end
+
   def test_tag_sha
     sha = '018141ee284c47db643e5fd6da9e639f32f891ef'
     tag_name = 'current'
