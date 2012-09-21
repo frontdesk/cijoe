@@ -13,4 +13,18 @@ class TestCIJoeGit < Test::Unit::TestCase
     assert_equal 'master', @git.branch
   end
 
+  def test_tag
+    sha = '018141ee284c47db643e5fd6da9e639f32f891ef'
+    tag_name = 'current'
+    @git.tag(sha, tag_name)
+    tag_sha = `cd #{@git.project_path} && git rev-parse #{tag_name}`.chomp
+    assert_equal sha, tag_sha
+  end
+
+  def test_tag_sha
+    sha = '018141ee284c47db643e5fd6da9e639f32f891ef'
+    tag_name = 'current'
+    @git.tag(sha, tag_name)
+    assert_equal sha, @git.tag_sha(tag_name)
+  end
 end

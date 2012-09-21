@@ -1,5 +1,7 @@
 class CIJoe
   class Git
+    attr_reader :project_path
+
     def initialize(project_path)
       @project_path = project_path
     end
@@ -11,6 +13,14 @@ class CIJoe
     def update
       `cd #{@project_path} && git fetch origin && git reset --hard origin/#{git_branch}`
       run_hook "after-reset"
+    end
+
+    def tag(sha, name)
+      `cd #{@project_path} && git tag #{name} #{sha}`
+    end
+
+    def tag_sha(name)
+      `cd #{@project_path} && git rev-parse #{name}`.chomp
     end
 
     def user_and_project
