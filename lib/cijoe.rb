@@ -73,10 +73,10 @@ class CIJoe
     @current_build.finished_at = Time.now
     @current_build.status = status
     @current_build.output = output
+    write_build 'last', @current_build
     @last_build = @current_build
 
     @current_build = nil
-    write_build 'last', @last_build
     @campfire.notify(@last_build) if @campfire.valid?
 
     build(@queue.next_branch_to_build) if @queue.waiting?
