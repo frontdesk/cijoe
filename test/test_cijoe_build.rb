@@ -28,14 +28,10 @@ class TestCIJoeBuild < Test::Unit::TestCase
     end
   end
 
-  def test_dump
-    json = "{\n  \"project_path\": \"path\",\n  \"user\": \"user\",\n  \"project\": \"project\",\n  \"started_at\": \"2007-11-01 15:25:00 +0000\",\n  \"finished_at\": null,\n  \"sha\": \"deadbeef\",\n  \"status\": \"success\",\n  \"output\": \"output\",\n  \"pid\": null,\n  \"branch\": null\n}"
-    assert_equal json, @build.dump
-  end
-
-  def test_restore
+  def test_dump_restore
     json = @build.dump
     parsed = CIJoe::Build.parse(json, 'path')
     assert_equal @build.started_at, parsed.started_at
+    assert_equal @build.sha, parsed.sha
   end
 end
