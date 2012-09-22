@@ -1,4 +1,12 @@
 require 'json'
+class Hash
+  def symbolize_keys!
+    keys.each do |key|
+      self[(key.to_sym rescue key) || key] = delete(key)
+    end
+    self
+  end
+end
 
 class CIJoe
   class Build < Struct.new(:project_path, :user, :project, :started_at, :finished_at, :sha, :status, :output, :pid, :branch)
@@ -9,13 +17,16 @@ class CIJoe
     end
 
     def self.new_from_hash(hash)
-      (hash.keys - Build.members.map{|member| member.to_sym}).tap do |extra_arguments|
+      hash.symbolize_keys!
+      members = Build.members.map{|member| member.to_sym}
+
+      (hash.keys - members).tap do |extra_arguments|
         if extra_arguments.any?
           raise ArgumentError.new("invalid argument #{extra_arguments.join(' ')}")
         end
       end
 
-      new( *hash.values_at(*Build.members.map {|member| member.to_sym}))
+      new( *hash.values_at(*members))
     end
 
     def status
@@ -54,9 +65,12 @@ class CIJoe
       map
     end
 
-#    def to_json(*a)
-#      to_map.to_json(*a)
-#    end
+    def to_json(*a)
+      to_map.tap do |hash|
+        hash[:started_at] = hash[:started_at].strftime('%Y-%m-%d %H:%M:%S %z') if hash[:started_at]
+        hash[:finished_at] = hash[:finished_at].strftime('%Y-%m-%d %H:%M:%S %z') if hash[:finished_at]
+      end.to_json(*a)
+    end
 
     def clean_output
       output.gsub(/\e\[.+?m/, '').strip
@@ -73,15 +87,15 @@ class CIJoe
     end
 
     def dump
-      config = [user, project, started_at, finished_at, sha, status, output, pid, branch]
-      JSON.pretty_generate(config)
+      JSON.pretty_generate self
     end
 
     def self.parse(data, project_path)
-      config = JSON.load(data).unshift(project_path)
-      new(*config).tap do |build|
-        build.started_at = Time.parse(build.started_at) if build.started_at
-        build.finished_at = Time.parse(build.finished_at) if build.finished_at
+      config = JSON.load(data)
+      new_from_hash(config).tap do |build|
+        build.project_path = project_path
+        build.started_at = Time.parse(build.started_at).utc if build.started_at
+        build.finished_at = Time.parse(build.finished_at).utc if build.finished_at
       end
     end
   end
