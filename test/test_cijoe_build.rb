@@ -3,7 +3,7 @@ require 'helper'
 class TestCIJoeBuild < Test::Unit::TestCase
 
   def setup
-    @time_now =  Time.new(2007,11,1,15,25)
+    @time_now =  Time.utc(2007,11,1,15,25)
     @build = CIJoe::Build.new_from_hash(
       {project_path: 'path',
        user:         'user',
@@ -28,7 +28,7 @@ class TestCIJoeBuild < Test::Unit::TestCase
   end
 
   def test_dump
-    yaml = "---\n- user\n- project\n- 2007-11-01 15:25:00.000000000 +02:00\n- \n- deadbeef\n- :building\n- output\n- \n- \n"
+    yaml = "---\n- user\n- project\n- 2007-11-01 15:25:00.000000000 Z\n- \n- deadbeef\n- :building\n- output\n- \n- \n"
     assert_equal yaml, @build.dump
   end
 end
