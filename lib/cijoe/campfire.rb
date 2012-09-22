@@ -1,7 +1,7 @@
 class CIJoe
   class Campfire
     attr_reader :project_path, :build
-    
+
     def initialize(project_path)
       @project_path = project_path
       if valid?
@@ -17,7 +17,7 @@ class CIJoe
         puts "\tssl = false"
       end
     end
-    
+
     def campfire_config
       campfire_config = Config.new('campfire', project_path)
       @config = {
