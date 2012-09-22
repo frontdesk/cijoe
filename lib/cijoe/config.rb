@@ -2,7 +2,7 @@ class CIJoe
   class Config
 
     def git_config_error_codes
-      [1,255]
+      [1,2,255]
     end
     def self.method_missing(command, *args)
       new(command, *args)
@@ -21,6 +21,7 @@ class CIJoe
     def to_s
       git_command = "cd #{@project_path} 2>/dev/null && git config #{config_string}"
       result = `#{git_command} 2>/dev/null`.chomp
+
       process_status = $?
 
       if successful_command?(process_status) || config_command_with_empty_value?(result,process_status)
