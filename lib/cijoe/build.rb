@@ -1,4 +1,4 @@
-require 'yaml'
+require 'json'
 
 class CIJoe
   class Build < Struct.new(:project_path, :user, :project, :started_at, :finished_at, :sha, :status, :output, :pid, :branch)
@@ -9,7 +9,7 @@ class CIJoe
     end
 
     def self.new_from_hash(hash)
-      (hash.keys - Build.members).tap do |extra_arguments|
+      (hash.keys - Build.members.map{|member| member.to_sym}).tap do |extra_arguments|
         if extra_arguments.any?
           raise ArgumentError.new("invalid argument #{extra_arguments.join(' ')}")
         end
@@ -48,6 +48,16 @@ class CIJoe
       end
     end
 
+    def to_map
+      map = Hash.new
+      self.members.each { |m| map[m] = self[m] }
+      map
+    end
+
+#    def to_json(*a)
+#      to_map.to_json(*a)
+#    end
+
     def clean_output
       output.gsub(/\e\[.+?m/, '').strip
     end
@@ -64,12 +74,15 @@ class CIJoe
 
     def dump
       config = [user, project, started_at, finished_at, sha, status, output, pid, branch]
-      YAML.dump(config)
+      JSON.pretty_generate(config)
     end
 
     def self.parse(data, project_path)
-      config = YAML.load(data).unshift(project_path)
-      new *config
+      config = JSON.load(data).unshift(project_path)
+      new(*config).tap do |build|
+        build.started_at = Time.parse(build.started_at) if build.started_at
+        build.finished_at = Time.parse(build.finished_at) if build.finished_at
+      end
     end
   end
 end
