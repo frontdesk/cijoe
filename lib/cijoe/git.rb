@@ -54,9 +54,9 @@ class CIJoe
     def user_and_project
       url = git_remote_url
       unless url.empty?
-        return url.chomp('.git').split(':')[-1].split('/')[-2, 2]
+        url.chomp('.git').split(':')[-1].split('/')[-2, 2]
       else
-        raise InvalidGitRepo
+        nil
       end
     end
 

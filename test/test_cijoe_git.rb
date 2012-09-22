@@ -12,10 +12,8 @@ class TestCIJoeGit < Test::Unit::TestCase
   end
 
   def test_user_and_project_on_invalid_repo
-    @git = CIJoe::Git.new('invalid_repo_path')
-    assert_raise CIJoe::Git::InvalidGitRepo do
-      @git.user_and_project
-    end
+    git = CIJoe::Git.new('invalid_repo_path')
+    assert_equal nil, git.user_and_project
   end
 
   def test_branch_sha
