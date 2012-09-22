@@ -1,6 +1,6 @@
 require 'helper'
 
-describe CIJoe::Config do
+describe 'CIJoe::Config' do
 
   it 'raises error on invalid command' do
     lambda { CIJoe::Config.new('--invalid').to_s}.must_raise(RuntimeError, LoadError)
