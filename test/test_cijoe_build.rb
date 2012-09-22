@@ -5,14 +5,15 @@ class TestCIJoeBuild < Test::Unit::TestCase
   def setup
     @time_now =  Time.utc(2007,11,1,15,25)
     @build = CIJoe::Build.new_from_hash(
-      {project_path: 'path',
-       user:         'user',
-       project:      'project',
-       started_at:   @time_now,
-       sha:          'deadbeef',
-       status:       :success,
-       output:       'output',
-       pid:          nil
+      {
+       :project_path => 'path',
+       :user         => 'user',
+       :project      => 'project',
+       :started_at   =>  @time_now,
+       :sha          => 'deadbeef',
+       :status       => :success,
+       :output       => 'output',
+       :pid          => nil
     })
   end
 

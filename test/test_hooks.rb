@@ -61,15 +61,16 @@ class TestHooks < Test::Unit::TestCase
     @cijoe = CIJoe.new('/tmp')
 
     @cijoe.last_build =CIJoe::Build.new_from_hash(
-      {project_path: 'path',
-       user:         'user',
-       project:      'project',
-       started_at:   Time.now,
-       finished_at:  Time.now,
-       sha:          'deadbeef',
-       status:       :failed,
-       output:       'output',
-       pid:          nil
+      {
+      :project_path => 'path',
+      :user         => 'user',
+      :project      => 'project',
+      :started_at   => Time.now,
+      :finished_at  => Time.now,
+      :sha          => 'deadbeef',
+      :status       => :failed,
+      :output       => 'output',
+      :pid          => nil
     })
 
     @cijoe.last_build.commit.raw_commit = "Author: commit author\nDate: now"

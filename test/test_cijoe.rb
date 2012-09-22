@@ -5,14 +5,15 @@ class TestCIJoe < Test::Unit::TestCase
     @cijoe = CIJoe.new(temp_repo('testrepo.git'))
 
     @build = CIJoe::Build.new(
-      {project_path: 'path',
-       user:         'user',
-       project:      'project',
-       started_at:   Time.now,
-       sha:          'HEAD',
-       status:       :success,
-       output:       'output',
-       pid:          nil
+      {
+       :project_path => 'path',
+       :user         => 'user',
+       :project      => 'project',
+       :started_at   => Time.now,
+       :sha          => 'HEAD',
+       :status       => :success,
+       :output       => 'output',
+       :pid          => nil
     })
 
   end

@@ -91,9 +91,9 @@ class CIJoe
       return
     end
     @current_build = Build.new_from_hash({
-      project_path: @project_path,
-      user:         @user,
-      project:      @project,
+      :project_path => @project_path,
+      :user         => @user,
+      :project      => @project,
     })
 
     Thread.new { build!(branch) }

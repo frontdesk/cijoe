@@ -123,15 +123,16 @@ class TestCIJoeServer < Test::Unit::TestCase
 
   def build status
     CIJoe::Build.new_from_hash(
-      {project_path: 'path',
-       user:         'user',
-       project:      'project',
-       started_at:   Time.now,
-       finished_at:  Time.now,
-       sha:          'deadbeef',
-       status:       status,
-       output:       'output',
-       pid:          nil
+      {
+      :project_path => 'path',
+      :user         => 'user',
+      :project      => 'project',
+      :started_at   => Time.now,
+      :finished_at  => Time.now,
+      :sha          => 'deadbeef',
+      :status       => status,
+      :output       => 'output',
+      :pid          => nil
     })
   end
 end
