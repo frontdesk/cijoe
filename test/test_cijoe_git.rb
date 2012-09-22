@@ -2,7 +2,12 @@ require "helper"
 
 class TestCIJoeGit < MiniTest::Unit::TestCase
   def setup
-    @git = CIJoe::Git.new(temp_repo('testrepo.git'))
+    @path = temp_repo('testrepo.git')
+    @git = CIJoe::Git.new(@path)
+  end
+
+  def teardown 
+   destroy_repo(@path)
   end
 
   def test_user_and_project

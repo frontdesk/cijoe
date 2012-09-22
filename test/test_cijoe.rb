@@ -2,7 +2,8 @@ require 'helper'
 
 class TestCIJoe < MiniTest::Unit::TestCase
   def setup
-    @cijoe = CIJoe.new(temp_repo('testrepo.git'))
+    @path = temp_repo('testrepo.git')
+    @cijoe = CIJoe.new(@path)
 
     @build = CIJoe::Build.new(
       {
@@ -16,6 +17,10 @@ class TestCIJoe < MiniTest::Unit::TestCase
        :pid          => nil
     })
 
+  end
+
+  def teardown
+    destroy_repo(@path)
   end
 
   def test_write_build

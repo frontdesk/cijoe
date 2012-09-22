@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'minitest/autorun'
-
 require 'mocha'
 
 ENV['RACK_ENV'] = 'test'
@@ -14,45 +13,20 @@ CIJoe::Server.set :environment,  "test"
 
 TMP_DIR = '/tmp/cijoe_test'
 
-def tmp_dir
-  TMP_DIR
-end
-
 TEST_DIR = File.dirname(File.expand_path(__FILE__))
 
-def temp_repo(repo)
-  dir = Dir.mktmpdir 'dir'
-  repo_dir = File.join(TEST_DIR, (File.join('fixtures', repo, '.')))
-  `git clone #{repo_dir} #{dir}`
-  dir
-end
-
-
-def setup_git_info(options = {})
-  @tmp_dirs ||= []
-  @tmp_dirs += [options[:tmp_dir]]
-  create_tmpdir!(options[:tmp_dir])
-  dir = options[:tmp_dir] || tmp_dir
-  `cd #{dir} && git init`
-  options[:config].each do |key, value|
-    `cd #{dir} && git config --add #{key} "#{value}"`
-  end
-end
-
-def teardown_git_info
-  remove_tmpdir!
-  @tmp_dirs.each do |dir|
-    remove_tmpdir!(dir)
-  end
-end
-
-def remove_tmpdir!(passed_dir = nil)
-  FileUtils.rm_rf(passed_dir || tmp_dir)
-end
-
-def create_tmpdir!(passed_dir = nil)
-  FileUtils.mkdir_p(passed_dir || tmp_dir)
-end
-
 class MiniTest::Unit::TestCase
+  private
+
+  def temp_repo(repo)
+    dir = Dir.mktmpdir 'dir'
+    repo_dir = File.join(TEST_DIR, (File.join('fixtures', repo, '.')))
+    `git clone #{repo_dir} #{dir}`
+    dir
+  end
+
+  def destroy_repo(repo)
+    FileUtils.remove_entry_secure repo
+  end
+
 end
