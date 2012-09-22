@@ -2,7 +2,7 @@ require 'helper'
 
 class TestCIJoe < MiniTest::Unit::TestCase
   def setup
-    @path = temp_repo('testrepo.git')
+    @path = setup_test_repo
     @cijoe = CIJoe.new(@path)
 
     @build = CIJoe::Build.new(

@@ -18,9 +18,9 @@ TEST_DIR = File.dirname(File.expand_path(__FILE__))
 class MiniTest::Unit::TestCase
   private
 
-  def temp_repo(repo)
+  def setup_test_repo
     dir = Dir.mktmpdir 'dir'
-    repo_dir = File.join(TEST_DIR, (File.join('fixtures', repo, '.')))
+    repo_dir = File.join(TEST_DIR, (File.join('fixtures', 'testrepo.git', '.')))
     `git clone #{repo_dir} #{dir}`
     dir
   end
