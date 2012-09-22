@@ -1,37 +1,43 @@
 require 'helper'
 
-class TestCIJoe < Test::Unit::TestCase
+describe CIJoe do
+
   def setup
-    @cijoe = CIJoe.new(temp_repo('testrepo.git'))
+    @path = setup_test_repo
+    @cijoe = CIJoe.new(@path)
 
     @build = CIJoe::Build.new(
       {
-       :project_path => 'path',
-       :user         => 'user',
-       :project      => 'project',
-       :started_at   => Time.now,
-       :sha          => 'HEAD',
-       :status       => :success,
-       :output       => 'output',
-       :pid          => nil
-    })
+        :project_path => 'path',
+        :user         => 'user',
+        :project      => 'project',
+        :started_at   => Time.now,
+        :sha          => 'HEAD',
+        :status       => :success,
+        :output       => 'output',
+        :pid          => nil
+      })
 
   end
 
-  def test_write_build
-    assert_nothing_raised do
-      @cijoe.write_build('current', @build)
+  def teardown
+    destroy_repo(@path)
+  end
+
+  describe '#write_build' do
+    it 'writes a build' do
+      @cijoe.write_build('current', @build).must_equal true
     end
   end
 
-  def test_non_existing_read_build
-    assert_equal nil, @cijoe.read_build('current')
-  end
+  describe '#read_build' do
+    it 'works with nonexisting builds' do
+      @cijoe.read_build('current').must_be_nil
+    end
 
-  def test_read_build
-    @cijoe.write_build('current', @build)
-    assert_nothing_raised do
-      @cijoe.read_build('current')
+    it 'reads a build' do
+      @cijoe.write_build('current', @build)
+      @cijoe.read_build('current').must_be_instance_of CIJoe::Build
     end
   end
 end

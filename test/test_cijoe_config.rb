@@ -1,23 +1,20 @@
 require 'helper'
 
-class TestCIJoe < Test::Unit::TestCase
-  def test_raise_error_on_invalid_command
-    assert_raise RuntimeError, LoadError do
-      CIJoe::Config.new('--invalid').to_s
-    end
+describe 'CIJoe::Config' do
+
+  it 'raises error on invalid command' do
+    lambda { CIJoe::Config.new('--invalid').to_s}.must_raise(RuntimeError, LoadError)
   end
 
-  def test_return_value_of_config
-    assert_equal `git config core.editor`.chomp, CIJoe::Config.new('core.editor').to_s
+  it 'returns a config value' do
+    CIJoe::Config.new('core.editor').to_s.must_equal `git config core.editor`.chomp
   end
 
-  def test_return_empty_string_when_config_key_does_not_exist
-    assert_equal '', CIJoe::Config.new('cijoe.invalid').to_s
+  it 'returns empty string when config key does not exist' do
+    CIJoe::Config.new('cijoe.invalid').to_s.must_be_empty
   end
 
-  def test_return_empty_string_when_config_section_does_not_exist
-    assert_equal '', CIJoe::Config.new('invalid').to_s
+  it 'returns empty string when config section does not exist' do
+    CIJoe::Config.new('invalid').to_s.must_be_empty
   end
-
-
 end
