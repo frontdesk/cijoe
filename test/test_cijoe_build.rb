@@ -1,37 +1,41 @@
 require 'helper'
 
-class TestCIJoeBuild < MiniTest::Unit::TestCase
+describe CIJoe::Build do
 
   def setup
     @time_now =  Time.utc(2007,11,1,15,25)
     @build = CIJoe::Build.new_from_hash(
       {
-       :project_path => 'path',
-       :user         => 'user',
-       :project      => 'project',
-       :started_at   =>  @time_now,
-       :sha          => 'deadbeef',
-       :status       => :success,
-       :output       => 'output',
-       :pid          => nil
-    })
+        :project_path => 'path',
+        :user         => 'user',
+        :project      => 'project',
+        :started_at   =>  @time_now,
+        :sha          => 'deadbeef',
+        :status       => :success,
+        :output       => 'output',
+        :pid          => nil
+      })
   end
 
-  def test_new_from_hash
-    build = CIJoe::Build.new_from_hash :sha => 'deadbeef'
-    assert_equal'deadbeef', build.sha
-  end
+  describe '.new_from_hash' do
+    it 'can be created from hash' do
+      build = CIJoe::Build.new_from_hash :sha => 'deadbeef'
+      build.sha.must_equal 'deadbeef'
+    end
 
-  def test_new_from_hash_fails_on_extra_args
-    assert_raises RuntimeError, ArgumentError do
-      build = CIJoe::Build.new_from_hash :illegal => 'deadbeef'
+    it 'raises excepton on extra fields' do
+      lambda { CIJoe::Build.new_from_hash :illegal => 'deadbeef'}.must_raise(RuntimeError, ArgumentError)
     end
   end
 
-  def test_dump_restore
-    json = @build.dump
-    parsed = CIJoe::Build.parse(json, 'path')
-    assert_equal @build.started_at, parsed.started_at
-    assert_equal @build.sha, parsed.sha
+  describe 'save/restore' do
+    it 'stores a build and restores it with correct timestamp' do
+      json = @build.dump
+      parsed = CIJoe::Build.parse(json, 'path')
+
+      parsed.started_at.must_equal @build.started_at
+      parsed.sha.must_equal @build.sha
+    end
   end
+
 end
