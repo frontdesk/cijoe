@@ -1,4 +1,5 @@
 [![Build Status](https://secure.travis-ci.org/nvloff/cijoe.png)](http://travis-ci.org/nvloff/cijoe)
+[![Dependency Status](https://gemnasium.com/nvloff/cijoe.png)](https://gemnasium.com/nvloff/cijoe)
 
 CI Joe
 ======
