@@ -11,15 +11,16 @@ require 'cijoe'
 CIJoe::Server.set :project_path, "."
 CIJoe::Server.set :environment,  "test"
 
-TMP_DIR = '/tmp/cijoe_test'
 
 TEST_DIR = File.dirname(File.expand_path(__FILE__))
+TMP_DIR = File.join(TEST_DIR, 'temp')
+FileUtils.mkdir_p(TMP_DIR)
 
 class MiniTest::Unit::TestCase
   private
 
   def setup_test_repo
-    dir = Dir.mktmpdir 'dir'
+    dir = Dir.mktmpdir('dir', TMP_DIR)
     repo_dir = File.join(TEST_DIR, (File.join('fixtures', 'testrepo.git', '.')))
     `git clone #{repo_dir} #{dir}`
     dir
