@@ -1,28 +1,31 @@
 require 'helper'
 
-class TestCIJoeQueue < MiniTest::Unit::TestCase
-  def test_a_disabled_queue
+
+describe CIJoe::Queue do
+  it 'can disable a queue' do
     subject = CIJoe::Queue.new(false)
     subject.append_unless_already_exists("test")
-    assert_equal false, subject.waiting?
+    subject.waiting?.must_equal false
   end
 
-  def test_adding_two_items_to_a_queue
+  it 'can add two items to a queue' do
     subject = CIJoe::Queue.new(true)
     subject.append_unless_already_exists("test")
     subject.append_unless_already_exists(nil)
-    assert_equal true, subject.waiting?
-    assert_equal "test", subject.next_branch_to_build
-    assert_equal nil, subject.next_branch_to_build
-    assert_equal false, subject.waiting?
+
+    subject.waiting?.must_equal true
+    subject.next_branch_to_build.must_equal 'test'
+    subject.next_branch_to_build.must_be_nil
+    subject.waiting?.must_equal false
   end
 
-  def test_adding_two_duplicate_items_to_a_queue
+  it 'squashes two duplicate items in the queue' do
     subject = CIJoe::Queue.new(true)
     subject.append_unless_already_exists("test")
     subject.append_unless_already_exists("test")
-    assert_equal true, subject.waiting?
-    assert_equal "test", subject.next_branch_to_build
-    assert_equal false, subject.waiting?
+
+    subject.waiting?.must_equal true
+    subject.next_branch_to_build.must_equal 'test'
+    subject.waiting?.must_equal false
   end
 end
