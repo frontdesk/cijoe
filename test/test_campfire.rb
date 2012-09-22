@@ -33,25 +33,26 @@ def tmp_dir
   TMP_DIR
 end
 
-class TestCampfire < MiniTest::Unit::TestCase
+describe CIJoe::Campfire do
 
   def teardown
     teardown_git_info
   end
 
-  def test_campfire_pulls_campfire_config_from_git_config
+  it 'pulls config from git config' do
     setup_git_info(:config => {"campfire.subdomain" => "github", "remote.origin.url" => "https://github.com/defunkt/cijoe.git"})
     cf = CIJoe::Campfire.new(tmp_dir)
-    assert_equal "github", cf.campfire_config[:subdomain]
+
+    cf.campfire_config[:subdomain].must_equal 'github'
   end
 
-  def test_campfire_pulls_campfire_config_from_its_own_git_config
+  it 'pulls confgit from its own gitconfig' do
     setup_git_info(:config => {"campfire.subdomain" => "github"})
     setup_git_info(:config => {"campfire.subdomain" => "37signals"}, :tmp_dir => "/tmp/cijoe_test_37signals")
     cf1 = CIJoe::Campfire.new(tmp_dir)
     cf2 = CIJoe::Campfire.new("/tmp/cijoe_test_37signals")
-    assert_equal "github", cf1.campfire_config[:subdomain]
-    assert_equal "37signals", cf2.campfire_config[:subdomain]
-  end
 
+    cf1.campfire_config[:subdomain].must_equal 'github'
+    cf2.campfire_config[:subdomain].must_equal '37signals'
+  end
 end
