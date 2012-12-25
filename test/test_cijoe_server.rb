@@ -134,7 +134,7 @@ describe CIJoe::Server do
 
       last_response.status.must_equal 200
       last_response.content_type.must_equal 'application/json'
-      last_response.body.must_match /^fooberz\(/
+      last_response.body.must_match(/^fooberz\(/)
     end
   end
 
