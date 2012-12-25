@@ -16,8 +16,10 @@ class CIJoe
     before { joe.restore }
 
     get '/ping' do
-      if joe.building? || !joe.last_build || !joe.last_build.worked?
-        halt 412, (joe.building? || joe.last_build.nil?) ? "building" : joe.last_build.sha
+      if joe.building? || joe.last_build.nil?
+        halt 412, "building"
+      elsif !joe.last_build.worked?
+        halt 412, joe.last_build.sha
       end
 
       joe.last_build.sha
