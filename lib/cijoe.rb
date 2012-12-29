@@ -61,12 +61,12 @@ class CIJoe
   # build callbacks
   def build_failed(output, error)
     finish_build :failed, "#{error}\n\n#{output}"
-    run_hook "build-failed"
+    run_hook("build-failed", @last_build)
   end
 
   def build_worked(output)
     finish_build :worked, output
-    run_hook "build-worked"
+    run_hook("build-worked", @last_build)
   end
 
   def finish_build(status, output)
@@ -119,7 +119,7 @@ class CIJoe
     output = ''
 
     @git.update
-    run_hook "after-reset"
+    run_hook("after-reset", @last_build)
 
     build.branch = branch || @git.branch
     build.sha = @git.branch_sha build.branch
@@ -148,30 +148,30 @@ class CIJoe
     runner == '' ? "rake -s test:units" : runner
   end
 
-  # massage our repo
-  def run_hook(hook)
-    if File.exists?(file=path_in_project(".git/hooks/#{hook}")) && File.executable?(file)
-      data =
-        if @last_build && @last_build.commit
-          {
-            "MESSAGE" => @last_build.commit.message,
-            "AUTHOR" => @last_build.commit.author,
-            "SHA" => @last_build.commit.sha,
-            "OUTPUT" => @last_build.env_output
-          }
-        else
-          {}
-        end
+  # message our repo
+  def run_hook(hook, build)
+    return unless file = hook_path(hook)
 
-      orig_ENV = ENV.to_hash
-      ENV.clear
-      data.each{ |k, v| ENV[k] = v }
-      output = `cd #{@project_path} && sh #{file}`
+    data =
+      if build && build.commit
+        {
+          "MESSAGE" => build.commit.message,
+          "AUTHOR" => build.commit.author,
+          "SHA" => build.commit.sha,
+          "OUTPUT" => build.env_output
+        }
+      else
+        {}
+      end
 
-      ENV.clear
-      orig_ENV.to_hash.each{ |k, v| ENV[k] = v}
-      output
-    end
+    orig_ENV = ENV.to_hash
+    ENV.clear
+    data.each{ |k, v| ENV[k] = v }
+    output = `cd #{@project_path} && sh #{file}`
+
+    ENV.clear
+    orig_ENV.to_hash.each{ |k, v| ENV[k] = v}
+    output
   end
 
   # restore current / last build state from disk.
@@ -204,4 +204,12 @@ class CIJoe
     sha = @git.tag_sha(name)
     Build.parse(@git.note_message(name), @project_path) unless sha.nil?
   end
+
+  private
+  def hook_path(hook)
+    [ "hooks/#{hook}", ".git/hooks/#{hook}"].map{ |path| path_in_project(path) }.select do |file|
+      File.exists?(file) && File.executable?(file)
+    end.first
+  end
+
 end
