@@ -8,11 +8,13 @@ describe CIJoe::Server do
   class ::CIJoe
     # make Build#restore a no-op so we don't overwrite our current/last
     # build attributes set from tests.
+    undef :restore if defined? :restore
     def restore
     end
 
     # make CIJoe#build! and CIJoe#git_update a no-op so we don't overwrite our local changes
     # or local commits nor should we run tests.
+    undef :build! if defined? :build!
     def build!
     end
   end
@@ -132,7 +134,7 @@ describe CIJoe::Server do
 
       last_response.status.must_equal 200
       last_response.content_type.must_equal 'application/json'
-      last_response.body.must_match /^fooberz\(/
+      last_response.body.must_match(/^fooberz\(/)
     end
   end
 

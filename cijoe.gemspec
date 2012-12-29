@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency     'sinatra'
   s.add_runtime_dependency     'multi_json'
   s.add_runtime_dependency     'tinder', '>= 1.4.0'
-  s.add_runtime_dependency     'fakefs'
   s.add_development_dependency 'rack-test'
   s.add_development_dependency 'mocha'
   s.add_development_dependency 'minitest'

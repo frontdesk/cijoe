@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'minitest/autorun'
-require 'mocha'
+require 'mocha/setup'
 
 ENV['RACK_ENV'] = 'test'
 
