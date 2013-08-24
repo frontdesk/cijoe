@@ -158,7 +158,8 @@ class CIJoe
           "MESSAGE" => build.commit.message,
           "AUTHOR" => build.commit.author,
           "SHA" => build.commit.sha,
-          "OUTPUT" => build.env_output
+          "OUTPUT" => build.env_output,
+          "BRANCH" => build.branch
         }
       else
         {}
