@@ -1,3 +1,8 @@
+require 'redis'
+require 'redis/objects'
+require 'redis/list'
+require 'uri'
+
 class CIJoe
   # An in memory queue used for maintaining an order list of requested
   # builds.
@@ -6,8 +11,14 @@ class CIJoe
     def initialize(enabled, verbose=false)
       @enabled = enabled
       @verbose = verbose
-      @queue = []
-
+      if ENV["REDIS_URL"]
+        ENV["REDIS_URL"] ||= "redis://localhost:6379/"
+        uri = URI.parse(ENV["REDIS_URL"])
+        $redis = Redis::Objects.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password, :thread_safe => true)
+        @queue = Redis::List.new('cijoe:queue', :marshal => true)
+      else
+        @queue = []
+      end
       log("Build queueing enabled") if enabled
     end
 
@@ -29,6 +40,7 @@ class CIJoe
     # Returns a String of the next branch to build
     def next_branch_to_build
       branch = @queue.shift
+      branch = "master" if 
       log "#{Time.now.to_i}: De-queueing #{branch}"
       branch
     end

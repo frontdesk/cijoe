@@ -1,3 +1,3 @@
 class CIJoe
-  Version = VERSION = "0.9.2"
+  Version = VERSION = "0.9.3"
 end

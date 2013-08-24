@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
   s.executables       = %w( cijoe )
 
   s.add_runtime_dependency     'choice'
+  s.add_runtime_dependency     'redis'
+  s.add_runtime_dependency     'redis-objects'
   s.add_runtime_dependency     'sinatra'
   s.add_runtime_dependency     'multi_json'
   s.add_runtime_dependency     'tinder', '>= 1.4.0'

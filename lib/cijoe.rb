@@ -179,6 +179,7 @@ class CIJoe
     @last_build = read_build('last')
 
     Process.kill(0, @current_build.pid) if @current_build && @current_build.pid
+    build(@queue.next_branch_to_build) if !building? && @queue.waiting?
   rescue Errno::ESRCH
     # build pid isn't running anymore. assume previous
     # server died and reset.
