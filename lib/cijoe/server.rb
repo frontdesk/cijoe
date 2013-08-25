@@ -41,6 +41,8 @@ class CIJoe
       # specified build branch.
       if params[:branch] || params[:rebuild] || pushed_branch == joe.git.branch
         joe.build(params[:branch])
+      elsif pushed_branch
+        joe.build(pushed_branch)
       end
 
       redirect request.path
