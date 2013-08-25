@@ -118,7 +118,7 @@ class CIJoe
     build = @current_build
     output = ''
 
-    @git.update
+    @git.update(branch)
     run_hook("after-reset", @last_build)
 
     build.branch = branch || @git.branch

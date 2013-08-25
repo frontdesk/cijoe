@@ -8,15 +8,19 @@ class CIJoe
       end
     end
 
-    def initialize(project_path)
+    def initialize(project_path, branch = nil)
       @project_path = project_path
+      @_branch = branch
     end
 
     def branch_sha(branch)
+      puts "cd #{@project_path} && git rev-parse origin/#{branch}"
       `cd #{@project_path} && git rev-parse origin/#{branch}`.chomp
     end
 
-    def update
+    def update(target_branch = nil)      
+      @_branch = target_branch
+      puts "cd #{@project_path} && git fetch origin && git reset --hard origin/#{branch}"
       `cd #{@project_path} && git fetch origin && git reset --hard origin/#{branch}`
     end
 
@@ -63,7 +67,7 @@ class CIJoe
     def branch
       branch = Config.cijoe(@project_path).branch.to_s
       if branch.empty?
-        'master'
+        @_branch || "master"
       else
         branch
       end
