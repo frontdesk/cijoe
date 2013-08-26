@@ -131,7 +131,7 @@ class CIJoe
   #      build.pid = pid
   #    output = pipe.read
   #  end
-    output, status = Open3.capture2e({'PATH' => rvm_munged_path}, "cd #{@project_path} && #{runner_command}")
+    output, status = Open3.capture2e("cd #{@project_path} && #{runner_command}")
     if status.exited? and not status.signaled?
       exit_code = status.exitstatus
     else
