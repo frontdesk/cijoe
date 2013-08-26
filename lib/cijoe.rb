@@ -126,7 +126,7 @@ class CIJoe
     build.sha = @git.branch_sha build.branch
 
     #open_pipe("cd #{@project_path} && #{runner_command} 2>&1") do |pipe, pid|
-      puts "#{Time.now.to_i}: Building #{build.branch} at #{build.short_sha}: pid=#{pid}"
+    puts "#{Time.now.to_i}: Building #{build.branch} at #{build.short_sha}"
 
   #      build.pid = pid
   #    output = pipe.read
@@ -138,9 +138,8 @@ class CIJoe
       exit_code = -1
     end
 
-    status = $?.exitstatus.to_i
     @current_build = build
-$stderr.puts "#{Time.now.to_i}: Built #{build.short_sha}: exit_code=#{exit_code}"
+    $stderr.puts "#{Time.now.to_i}: Built #{build.short_sha}: exit_code=#{exit_code}"
 
     $stderr.puts <<-EOS
 --< Build Output >--
