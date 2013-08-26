@@ -21,6 +21,7 @@ require 'cijoe/campfire'
 require 'cijoe/server'
 require 'cijoe/queue'
 require 'cijoe/git'
+require 'open3'
 
 class CIJoe
   attr_reader :user, :project, :url, :current_build, :last_build, :campfire, :git
@@ -124,19 +125,32 @@ class CIJoe
     build.branch = branch || @git.branch
     build.sha = @git.branch_sha build.branch
 
-    open_pipe("cd #{@project_path} && #{runner_command} 2>&1") do |pipe, pid|
+    #open_pipe("cd #{@project_path} && #{runner_command} 2>&1") do |pipe, pid|
       puts "#{Time.now.to_i}: Building #{build.branch} at #{build.short_sha}: pid=#{pid}"
 
-      build.pid = pid
-      output = pipe.read
+  #      build.pid = pid
+  #    output = pipe.read
+  #  end
+    output, status = Open3.capture2e({'PATH' => rvm_munged_path}, "cd #{@project_path} && #{runner_command}")
+    if status.exited? and not status.signaled?
+      exit_code = status.exitstatus
+    else
+      exit_code = -1
     end
 
-    Process.waitpid(build.pid, 1)
     status = $?.exitstatus.to_i
     @current_build = build
-    puts "#{Time.now.to_i}: Built #{build.short_sha}: status=#{status}"
+$stderr.puts "#{Time.now.to_i}: Built #{build.short_sha}: exit_code=#{exit_code}"
 
-    status == 0 ? build_worked(output) : build_failed('', output)
+    $stderr.puts <<-EOS
+--< Build Output >--
+
+#{output}
+
+--------------------
+EOS
+
+    exit_code == 0 ? build_worked(output) : build_failed('', output)
   rescue Object => e
     puts "Exception building: #{e.message} (#{e.class})"
     build_failed('', e.to_s)
