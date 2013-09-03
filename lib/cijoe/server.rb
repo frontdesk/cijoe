@@ -30,6 +30,9 @@ class CIJoe
     end
 
     post '/?' do
+      puts "---- params ----"
+      puts params
+      puts "----------------"
       unless params[:rebuild]
         payload = JSON.parse(params[:payload])
         pushed_branch = payload["ref"].split('/').last
