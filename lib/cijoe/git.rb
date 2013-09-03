@@ -20,8 +20,8 @@ class CIJoe
 
     def update(target_branch = nil)      
       @_branch = target_branch
-      puts "cd #{@project_path} && git fetch origin && git checkout #{branch} && git reset --hard origin/#{branch}"
-      `cd #{@project_path} && git fetch origin && git checkout #{branch} && git reset --hard origin/#{branch}`
+      puts "cd #{@project_path} && git reset --hard HEAD && git fetch origin && git checkout #{branch} && git reset --hard origin/#{branch}"
+      `cd #{@project_path} && git reset --hard HEAD && git fetch origin && git checkout #{branch} && git reset --hard origin/#{branch}`
     end
 
     def tag(sha, name)
