@@ -39,17 +39,33 @@ class CIJoe
 
     # Returns a String of the next branch to build
     def next_branch_to_build
-      branch = @queue.shift
-      branch = "master" if 
-      log "#{Time.now.to_i}: De-queueing #{branch}"
-      branch
+      branch = filtered_queue.shift
+      if @queue.delete(branch)
+        log "#{Time.now.to_i}: De-queueing #{branch}"
+        branch
+      else
+        nil
+      end
+    end
+
+    def filtered_queue
+      branches_to_consider = (ENV["CI_BRANCHES"] && ENV["CI_BRANCHES"].split(",")).to_a
+      branches_to_ignore = (ENV["CI_IGNORE"] && ENV["CI_IGNORE"].split(",")).to_a
+      result = @queue.to_a
+      unless branches_to_consider.empty?
+        result &= branches_to_consider 
+      end
+      unless branches_to_ignore.empty?
+        result -= branches_to_ignore 
+      end
+      result      
     end
 
     # Returns true if there are requested builds waiting and false
     # otherwise.
     def waiting?
       if enabled?
-        not @queue.empty?
+        not filtered_queue.empty?
       else
         false
       end
