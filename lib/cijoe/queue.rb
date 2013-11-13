@@ -49,8 +49,8 @@ class CIJoe
     end
 
     def filtered_queue
-      branches_to_consider = (ENV["CI_BRANCHES"] && ENV["CI_BRANCHES"].split(",")).to_a
-      branches_to_ignore = (ENV["CI_IGNORE"] && ENV["CI_IGNORE"].split(",")).to_a
+      branches_to_consider = (ENV["CIJOE_BRANCHES"] && ENV["CIJOE_BRANCHES"].split(",")).to_a
+      branches_to_ignore = (ENV["CIJOE_IGNORE"] && ENV["CIJOE_IGNORE"].split(",")).to_a
       result = @queue.to_a
       unless branches_to_consider.empty?
         result &= branches_to_consider 
