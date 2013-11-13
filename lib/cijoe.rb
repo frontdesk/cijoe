@@ -82,11 +82,15 @@ class CIJoe
 
     build(@queue.next_branch_to_build) if @queue.waiting?
   end
+  
+  def queue_branch(branch)
+    @queue.append_unless_already_exists(branch)
+  end
 
   # run the build but make sure only one is running
   # at a time (if new one comes in we will park it)
   def build(branch=nil)
-    if building? || true # always queue
+    if building?
       @queue.append_unless_already_exists(branch)
       # leave anyway because a current build runs
       return
