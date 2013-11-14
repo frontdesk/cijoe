@@ -80,7 +80,7 @@ class CIJoe
     @current_build = nil
     @campfire.notify(@last_build) if @campfire.valid?
 
-    build(@queue.next_branch_to_build) if @queue.waiting?
+    build if @queue.waiting?
   end
   
   def queue_branch(branch)
@@ -91,10 +91,15 @@ class CIJoe
   # at a time (if new one comes in we will park it)
   def build(branch=nil)
     if building?
-      @queue.append_unless_already_exists(branch)
+      @queue.append_unless_already_exists(branch) if branch
       # leave anyway because a current build runs
       return
     end
+
+    branch = @queue.next_branch_to_build
+
+    return unless branch
+    
     @current_build = Build.new_from_hash({
       :project_path => @project_path,
       :user         => @user,
