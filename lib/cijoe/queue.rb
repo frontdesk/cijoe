@@ -15,7 +15,7 @@ class CIJoe
         ENV["REDIS_URL"] ||= "redis://localhost:6379/"
         uri = URI.parse(ENV["REDIS_URL"])
         $redis = Redis::Objects.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password, :thread_safe => true)
-        @queue = Redis::List.new('cijoe:queue', :marshal => true)
+        @queue = Redis::List.new('cijoe:queue')
       else
         @queue = []
       end
