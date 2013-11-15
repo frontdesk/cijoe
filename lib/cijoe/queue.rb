@@ -11,9 +11,9 @@ class CIJoe
     def initialize(enabled, verbose=false)
       @enabled = enabled
       @verbose = verbose
-      if ENV["REDIS_URL"]
-        ENV["REDIS_URL"] ||= "redis://localhost:6379/"
-        uri = URI.parse(ENV["REDIS_URL"])
+      if ENV["CIJOE_REDIS_URL"]
+        ENV["CIJOE_REDIS_URL"] ||= "redis://localhost:6379/"
+        uri = URI.parse(ENV["CIJOE_REDIS_URL"])
         $redis = Redis::Objects.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password, :thread_safe => true)
         @queue = Redis::List.new('cijoe:queue')
       else
